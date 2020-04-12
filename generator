@@ -55,7 +55,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 			fi
 			cat <<EOF
 				<th>
-					<img src="$EAN.jpg" alt="chýba obrázok" height="150" width="150"><br>
+					<img src="$EAN.jpg" alt="chýba obrázok"><br>
 					$NAME<br>
 					$SUM ks
 				</th>
