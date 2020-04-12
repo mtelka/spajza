@@ -1,0 +1,72 @@
+#!/bin/sh
+
+cat <<EOF
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="UTF-8">  
+		<title>Špajza</title>
+		<style>
+			body {
+				text-align: center;
+				background-color: white;
+			}
+			.rovnac > img {
+				display: inline-block;
+				max-width: 300px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<h1><b>Špajza</b></h1>
+<!--		<h2><a href="https://sklad.rohlik.sk">späť</a></h2> -->
+		<hr>
+
+		<table style="width:100%">
+EOF
+
+i=0
+SUM=0
+NAME=""
+IFS=""
+line=""
+grep -v '^$' | while [[ "$line" != "END" ]] ; do
+	read -r line || line="END"
+	if echo "$line" | grep -q -v "^$(printf '\t')" ; then
+		if [[ "$NAME" ]] ; then
+			if ((i == 0)) ; then
+				echo "<tr>"
+			fi
+			cat <<-EOF
+				<th>
+					<img src="$EAN.jpg" alt="chýba obrázok" height="150" width="150"><br>
+					$NAME<br>
+					$SUM ks
+				</th>
+			EOF
+			i=$((i + 1))
+			if ((i == 5)) || [[ "$line" == "END" ]] ; then
+				echo "</tr>"
+				i=0
+			fi
+			SUM=0
+		fi
+		
+		if echo "$line" | grep -q "$(printf '\t')" ; then
+			EAN=$(echo "$line" | sed -e "s/$(printf '\t').*\$//g")
+		else
+			EAN=0
+		fi
+		NAME=$(echo "$line" | sed -e "s/^.*$(printf '\t')//g")
+	else
+		COUNT=$(printf "%s" "$line" | awk '{print $2}')
+		SUM=$((SUM + COUNT))
+	fi
+done
+
+cat <<EOF
+		</table>
+	</body>
+</html>
+EOF
