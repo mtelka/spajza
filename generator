@@ -37,6 +37,19 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 	read -r line || line="END"
 	if echo "$line" | grep -q -v "^$TAB" ; then
 		if [[ "$NAME" ]] ; then
+			if [[ "EAN" != "0" && -n "$URL" && ! -f "$EAN.jpg" ]] ; then
+				IMGURL=$(curl -s "$URL" | grep cdn-cgi | sed -e 's/^.*"[^"]*cdn-cgi[^"]*\(https[^"]*\)".*$/\1/g')
+				echo "$IMGURL" | grep -q "^https" || IMGURL=
+			else
+				IMGURL=
+			fi
+			if [[ -n "$IMGURL" ]] ; then
+				TMPFILE=$(mktemp)
+				curl -s "$IMGURL" --output "$TMPFILE"
+				convert "$TMPFILE" -resize 150x150 "$EAN.jpg"
+				rm -f "$TMPFILE"
+			fi
+
 			if ((i == 0)) ; then
 				echo "<tr>"
 			fi
