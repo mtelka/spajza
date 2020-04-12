@@ -1,5 +1,7 @@
 #!/bin/sh
 
+TAB="$(printf '\t')"
+
 cat <<EOF
 <!DOCTYPE html>
 <html lang="cs">
@@ -33,7 +35,7 @@ IFS=""
 line=""
 grep -v '^$' | while [[ "$line" != "END" ]] ; do
 	read -r line || line="END"
-	if echo "$line" | grep -q -v "^$(printf '\t')" ; then
+	if echo "$line" | grep -q -v "^$TAB" ; then
 		if [[ "$NAME" ]] ; then
 			if ((i == 0)) ; then
 				echo "<tr>"
@@ -53,12 +55,12 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 			SUM=0
 		fi
 		
-		if echo "$line" | grep -q "$(printf '\t')" ; then
-			EAN=$(echo "$line" | sed -e "s/$(printf '\t').*\$//g")
+		if echo "$line" | grep -q "$TAB" ; then
+			EAN=$(echo "$line" | sed -e "s/$TAB.*\$//g")
 		else
 			EAN=0
 		fi
-		NAME=$(echo "$line" | sed -e "s/^.*$(printf '\t')//g")
+		NAME=$(echo "$line" | sed -e "s/^.*$TAB//g")
 	else
 		COUNT=$(printf "%s" "$line" | awk '{print $2}')
 		SUM=$((SUM + COUNT))
