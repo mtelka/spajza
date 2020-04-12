@@ -62,7 +62,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 		fi
 		NAME=$(echo "$line" | sed -e "s/^.*$TAB//g")
 	else
-		COUNT=$(printf "%s" "$line" | awk '{print $2}')
+		COUNT=$(echo "$line" | awk '{print $2}')
 		SUM=$((SUM + COUNT))
 	fi
 done
