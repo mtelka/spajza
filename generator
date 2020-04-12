@@ -56,11 +56,14 @@ EOF
 		fi
 		
 		if echo "$line" | grep -q "$TAB" ; then
-			EAN=$(echo "$line" | sed -e "s/$TAB.*\$//g")
+			EAN=$(echo "$line" | awk -F"$TAB" '{print $1}')
+			NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
+			URL=$(echo "$line" | awk -F"$TAB" '{print $3}')
 		else
 			EAN=0
+			NAME="$line"
+			URL=""
 		fi
-		NAME=$(echo "$line" | sed -e "s/^.*$TAB//g")
 	else
 		COUNT=$(echo "$line" | awk '{print $2}')
 		SUM=$((SUM + COUNT))
