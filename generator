@@ -38,7 +38,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 	if echo "$line" | grep -q -v "^$TAB" ; then
 		if [[ "$NAME" ]] ; then
 			if [[ "EAN" != "0" && -n "$URL" && ! -f "$EAN.jpg" ]] ; then
-				IMGURL=$(curl -s "$URL" | grep cdn-cgi | tr ">" "\n" | grep cdn-cgi | sed -e 's/^.*"[^"]*cdn-cgi[^"]*\(https[^"]*\)".*$/\1/g')
+				IMGURL=$(curl -s "$URL" | grep cdn-cgi | tr ">" "\n" | grep cdn-cgi | head -n1 | sed -e 's/^.*"[^"]*cdn-cgi[^"]*\(https[^"]*\)".*$/\1/g')
 				echo "$IMGURL" | grep -q "^https" || IMGURL=
 			else
 				IMGURL=
