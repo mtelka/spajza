@@ -22,7 +22,11 @@ cat <<EOF
 
 	<body>
 		<h1><b>Špajza</b></h1>
-<!--		<h2><a href="https://sklad.rohlik.sk">späť</a></h2> -->
+		<table style="width:100%">
+			<tr>
+				<th><a href=".">Všetko</a></th>
+			</tr>
+		</table>
 		<hr>
 
 		<table style="width:100%">
