@@ -1,5 +1,7 @@
 #!/bin/sh
 
+CATEGORY=$1
+
 TAB="$(printf '\t')"
 
 cat <<EOF
@@ -54,7 +56,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 				rm -f "$TMPFILE"
 			fi
 
-			printf "%s|%s|%s\n" "$EAN" "$NAME" "$SUM"
+			[[ -z "$CATEGORY" || "$CATEGORY" == "$CAT" ]] && printf "%s|%s|%s\n" "$EAN" "$NAME" "$SUM"
 
 			SUM=0
 		fi
@@ -63,10 +65,12 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 			EAN=$(echo "$line" | awk -F"$TAB" '{print $1}')
 			NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
 			URL=$(echo "$line" | awk -F"$TAB" '{print $3}')
+			CAT=$(echo "$line" | awk -F"$TAB" '{print $4}')
 		else
 			EAN=0
 			NAME="$line"
 			URL=""
+			CAT=""
 		fi
 	else
 		COUNT=$(echo "$line" | awk '{print $2}')
