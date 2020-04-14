@@ -1,15 +1,28 @@
 #!/bin/sh
 
-CATEGORY=$1
+CATFILE=$1
+CATEGORY=$2
 
 TAB="$(printf '\t')"
+
+CATNAME="Všetko"
+if [[ -f "$CATFILE" && "$CATEGORY" ]] ; then
+	cat "$CATFILE" | while read line ; do
+		ID=$(echo "$line" | awk -F"$TAB" '{print $1}')
+		NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
+		if [[ "$CATEGORY" == "$ID" ]] ; then
+			CATNAME="$NAME"
+			break
+		fi
+	done
+fi
 
 cat <<EOF
 <!DOCTYPE html>
 <html lang="cs">
 	<head>
 		<meta charset="UTF-8">  
-		<title>Špajza</title>
+		<title>Špajza ($CATNAME)</title>
 		<style>
 			body {
 				text-align: center;
@@ -23,10 +36,19 @@ cat <<EOF
 	</head>
 
 	<body>
-		<h1><b>Špajza</b></h1>
+		<h1><b>Špajza ($CATNAME)</b></h1>
 		<table style="width:100%">
 			<tr>
 				<th><a href=".">Všetko</a></th>
+EOF
+if [[ -f "$CATFILE" ]] ; then
+	cat "$CATFILE" | while read line ; do
+		ID=$(echo "$line" | awk -F"$TAB" '{print $1}')
+		NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
+		printf "\t\t\t\t<th><a href="%s.html">%s</a></th>\n" "$ID" "$NAME"
+	done
+fi
+cat <<EOF
 			</tr>
 		</table>
 		<hr>
