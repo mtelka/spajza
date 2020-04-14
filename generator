@@ -37,7 +37,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 	read -r line || line="END"
 	if echo "$line" | grep -q -v "^$TAB" ; then
 		if [[ "$NAME" ]] ; then
-			if [[ "EAN" != "0" && -n "$URL" && ! -f "$EAN.jpg" ]] ; then
+			if [[ "EAN" != "0" && -n "$URL" && ! -f "$EAN.png" ]] ; then
 				IMGURL=$(curl -s "$URL" | grep cdn-cgi | tr ">" "\n" | grep cdn-cgi | head -n1 | sed -e 's/^.*"[^"]*cdn-cgi[^"]*\(https[^"]*\)".*$/\1/g')
 				echo "$IMGURL" | grep -q "^https" || IMGURL=
 			else
@@ -46,7 +46,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 			if [[ -n "$IMGURL" ]] ; then
 				TMPFILE=$(mktemp)
 				curl -s "$IMGURL" --output "$TMPFILE"
-				convert "$TMPFILE" -resize 150x150 "$EAN.jpg"
+				convert "$TMPFILE" -resize 150x150 "$EAN.png"
 				rm -f "$TMPFILE"
 			fi
 
@@ -55,7 +55,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 			fi
 			cat <<EOF
 				<th>
-					<img src="$EAN.jpg" alt="chýba obrázok"><br>
+					<img src="$EAN.png" alt="chýba obrázok"><br>
 					$NAME<br>
 					$SUM ks
 				</th>
