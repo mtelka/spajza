@@ -50,21 +50,8 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 				rm -f "$TMPFILE"
 			fi
 
-			if ((i == 0)) ; then
-				echo "<tr>"
-			fi
-			cat <<EOF
-				<th>
-					<img src="$EAN.png" alt="chýba obrázok"><br>
-					$NAME<br>
-					$SUM ks
-				</th>
-EOF
-			i=$((i + 1))
-			if ((i == 5)) || [[ "$line" == "END" ]] ; then
-				echo "</tr>"
-				i=0
-			fi
+			printf "%s|%s|%s\n" "$EAN" "$NAME" "$SUM"
+
 			SUM=0
 		fi
 		
@@ -81,7 +68,29 @@ EOF
 		COUNT=$(echo "$line" | awk '{print $2}')
 		SUM=$((SUM + COUNT))
 	fi
+done | LC_COLLATE=sk_SK.UTF-8 sort -t"|" -k2,2 | while read line ; do
+	EAN=$(echo "$line" | awk -F"|" '{print $1}')
+	NAME=$(echo "$line" | awk -F"|" '{print $2}')
+	SUM=$(echo "$line" | awk -F"|" '{print $3}')
+
+	if ((i == 5)) ; then
+		printf "\t\t\t</tr>\n"
+		i=0
+	fi
+	if ((i == 0)) ; then
+		printf "\t\t\t<tr>\n"
+	fi
+	cat <<EOF
+				<th>
+					<img src="$EAN.png" alt="chýba obrázok"><br>
+					$NAME<br>
+					$SUM ks
+				</th>
+EOF
+	i=$((i + 1))
 done
+
+((i > 0)) && printf "\t\t\t</tr>\n"
 
 cat <<EOF
 		</table>
