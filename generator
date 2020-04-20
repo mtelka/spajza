@@ -78,7 +78,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 				rm -f "$TMPFILE"
 			fi
 
-			[[ -z "$CATEGORY" || "$CATEGORY" == "$CAT" ]] && printf "%s|%s|%s\n" "$EAN" "$NAME" "$SUM"
+			[[ -z "$CATEGORY" || "$CATEGORY" == "$CAT" ]] && printf "%s|%s|%s|%s\n" "$EAN" "$NAME" "$SUM" "$URL"
 
 			SUM=0
 		fi
@@ -102,6 +102,14 @@ done | LC_COLLATE=sk_SK.UTF-8 sort -t"|" -k2,2 | while read line ; do
 	EAN=$(echo "$line" | awk -F"|" '{print $1}')
 	NAME=$(echo "$line" | awk -F"|" '{print $2}')
 	SUM=$(echo "$line" | awk -F"|" '{print $3}')
+	URL=$(echo "$line" | awk -F"|" '{print $4}')
+
+	A1=
+	A2=
+	if [[ "$URL" ]] ; then
+		A1="<a rel=\"noreferrer\" href=\"$URL\">"
+		A2="</a>"
+	fi
 
 	if ((i == 5)) ; then
 		printf "\t\t\t</tr>\n"
@@ -113,7 +121,7 @@ done | LC_COLLATE=sk_SK.UTF-8 sort -t"|" -k2,2 | while read line ; do
 	cat <<EOF
 				<th>
 					<img src="$EAN.png" alt="chýba obrázok"><br>
-					$NAME<br>
+					$A1$NAME$A2<br>
 					$SUM ks
 				</th>
 EOF
