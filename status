@@ -1,0 +1,74 @@
+#!/bin/ksh93
+
+TAB="$(printf '\t')"
+
+ITEM=""
+IFS=""
+END=0
+while ((END == 0)) ; do
+	if read -r ORIGLINE ; then
+		# strip comments
+		line=${ORIGLINE%%#*}
+		# strip trailing whitespaces
+		while
+			TAIL=${line:${#line} - 1}
+			[[ "$TAIL" == " " || "$TAIL" == "$TAB" ]]
+		do
+			line=${line:0:${#line} - 1}
+		done
+	else
+		line=""
+		END=1
+	fi
+
+	if echo "$line" | grep -q -v "^$TAB" ; then
+		if [[ -n "$ITEM" ]] ; then
+			for L in "${!STOCK[@]}" ; do
+				TS=$(echo "$L" | cut -d "$TAB" -f 1)
+				EXP=$(echo "$L" | cut -d "$TAB" -f 2)
+				PRICE=$(echo "$L" | cut -d "$TAB" -f 3)
+				integer STCOUNT=${STOCK[$L]}
+				((STCOUNT == 0)) ||  printf "\t%s\t%s\t%s\t%s\n" "$TS" "$STCOUNT" "$EXP" "$PRICE"
+			done
+		fi
+
+		ITEM="$line"
+		LAST=0
+
+		unset STOCK
+		typeset -A STOCK
+
+		((END == 0)) && printf "%s\n" "$ORIGLINE"
+	else
+		TS=$(echo "$line" | cut -d "$TAB" -f 2)
+		COUNT=$(echo "$line" | cut -d "$TAB" -f 3)
+		EXP=$(echo "$line" | cut -d "$TAB" -f 4)
+
+		if [[ "$TS" < "$LAST" ]] ; then
+			printf "Time lapse: %s\n" "$ORIGLINE" > /dev/stderr
+		fi
+
+		LAST="$TS"
+
+		if ((COUNT > 0)) ; then
+			PRICE=$(echo "$line" | cut -d "$TAB" -f 5)
+			integer STCOUNT=${STOCK[$TS$TAB$EXP$TAB$PRICE]}
+			((STCOUNT == 0)) || printf "Sub-optimal entry: %s\n" "$ORIGLINE" > /dev/stderr
+			STOCK[$TS$TAB$EXP$TAB$PRICE]=$((STCOUNT + COUNT))
+		elif ((COUNT < 0)) ; then
+			for L in "${!STOCK[@]}" ; do
+				SEXP=$(echo "$L" | cut -d "$TAB" -f 2)
+				integer STCOUNT=${STOCK[$L]}
+				if [[ "$EXP" == "$SEXP" ]] ; then
+					((STCOUNT < -COUNT)) && printf "Not enough stock: %s\n" "$ORIGLINE" > /dev/stderr
+					STOCK[$L]=$((STCOUNT + COUNT))
+					COUNT=0
+					break
+				fi
+			done
+			((COUNT == 0)) || printf "Unable to pair: %s\n" "$ORIGLINE" > /dev/stderr
+		else
+			printf "Invalid entry: %s\n" "$ORIGLINE" > /dev/stderr
+		fi
+	fi
+done
