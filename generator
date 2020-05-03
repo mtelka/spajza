@@ -65,7 +65,7 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 	read -r line || line="END"
 	if echo "$line" | grep -q -v "^$TAB" ; then
 		if [[ "$NAME" ]] ; then
-			if [[ "EAN" != "0" && -n "$URL" && ! -f "$EAN.png" ]] ; then
+			if [[ -n "$URL" && ! -f "$EAN.png" ]] ; then
 				IMGURL=$(curl -s "$URL" | grep cdn-cgi | tr ">" "\n" | grep cdn-cgi | head -n1 | sed -e 's/^.*"[^"]*cdn-cgi[^"]*\(https[^"]*\)".*$/\1/g')
 				echo "$IMGURL" | grep -q "^https" || IMGURL=
 			else
@@ -83,17 +83,10 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 			SUM=0
 		fi
 		
-		if echo "$line" | grep -q "$TAB" ; then
-			EAN=$(echo "$line" | awk -F"$TAB" '{print $1}')
-			NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
-			URL=$(echo "$line" | awk -F"$TAB" '{print $3}')
-			CAT=$(echo "$line" | awk -F"$TAB" '{print $4}')
-		else
-			EAN=0
-			NAME="$line"
-			URL=""
-			CAT=""
-		fi
+		EAN=$(echo "$line" | awk -F"$TAB" '{print $1}')
+		NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
+		URL=$(echo "$line" | awk -F"$TAB" '{print $3}')
+		CAT=$(echo "$line" | awk -F"$TAB" '{print $4}')
 	else
 		COUNT=$(echo "$line" | awk '{print $2}')
 		SUM=$((SUM + COUNT))
