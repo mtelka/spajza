@@ -60,10 +60,11 @@ while ((END == 0)) ; do
 				SEXP=$(echo "$L" | cut -d "$TAB" -f 2)
 				integer STCOUNT=${STOCK[$L]}
 				if [[ "$EXP" == "$SEXP" ]] ; then
-					((STCOUNT < -COUNT)) && printf "Not enough stock: %s\n" "$ORIGLINE" > /dev/stderr
-					STOCK[$L]=$((STCOUNT + COUNT))
-					COUNT=0
-					break
+					integer DEC=$((-COUNT))
+					((STCOUNT < DEC)) && DEC=$((STCOUNT))
+					STOCK[$L]=$((STCOUNT - DEC))
+					COUNT=$((COUNT + DEC))
+					((COUNT == 0)) && break
 				fi
 			done
 			((COUNT == 0)) || printf "Unable to pair: %s\n" "$ORIGLINE" > /dev/stderr
