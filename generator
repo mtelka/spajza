@@ -57,7 +57,6 @@ cat <<EOF
 EOF
 
 i=0
-SUM=0
 NAME=""
 IFS=""
 line=""
@@ -79,14 +78,14 @@ grep -v '^$' | while [[ "$line" != "END" ]] ; do
 			fi
 
 			[[ -z "$CATEGORY" || "$CATEGORY" == "$CAT" ]] && printf "%s|%s|%s|%s\n" "$EAN" "$NAME" "$SUM" "$URL"
-
-			SUM=0
 		fi
 		
 		EAN=$(echo "$line" | awk -F"$TAB" '{print $1}')
 		NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
 		URL=$(echo "$line" | awk -F"$TAB" '{print $3}')
 		CAT=$(echo "$line" | awk -F"$TAB" '{print $4}')
+
+		SUM=0
 	else
 		COUNT=$(echo "$line" | awk '{print $2}')
 		SUM=$((SUM + COUNT))
