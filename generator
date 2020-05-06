@@ -59,9 +59,23 @@ EOF
 i=0
 NAME=""
 IFS=""
-line=""
-grep -v '^$' | while [[ "$line" != "END" ]] ; do
-	read -r line || line="END"
+END=0
+while ((END == 0)) ; do
+	if read -r ORIGLINE ; then
+		# strip comments
+		line=${ORIGLINE%%#*}
+		# strip trailing whitespaces
+		while
+			TAIL=${line:${#line} - 1}
+			[[ "$TAIL" == " " || "$TAIL" == "$TAB" ]]
+		do
+			line=${line:0:${#line} - 1}
+		done
+	else
+		line=""
+		END=1
+	fi
+
 	if echo "$line" | grep -q -v "^$TAB" ; then
 		if [[ "$NAME" ]] ; then
 			if [[ -n "$URL" && ! -f "$EAN.png" ]] ; then
