@@ -69,6 +69,7 @@ i=0
 NAME=""
 IFS=""
 END=0
+EMPTY=0
 while ((END == 0)) ; do
 	if read -r ORIGLINE ; then
 		# strip comments
@@ -119,6 +120,13 @@ done | LC_COLLATE=sk_SK.UTF-8 sort -t"|" -k5nr,5 -k2,2 | while read line ; do
 	NAME=$(echo "$line" | awk -F"|" '{print $2}')
 	SUM=$(echo "$line" | awk -F"|" '{print $3}')
 	URL=$(echo "$line" | awk -F"|" '{print $4}')
+
+	if ((SUM == 0 && EMPTY == 0)) ; then
+		EMPTY=1
+		i=0
+
+		printf '\t\t\t</tr>\n\t\t</table>\n\t\t<hr>\n\t\t<table style="width:100%%">\n'
+	fi
 
 	A1=
 	A2=
