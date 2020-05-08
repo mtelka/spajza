@@ -100,7 +100,8 @@ while ((END == 0)) ; do
 				rm -f "$TMPFILE"
 			fi
 
-			[[ -z "$CATEGORY" || "$CATEGORY" == "$CAT" ]] && printf "%s|%s|%s|%s\n" "$EAN" "$NAME" "$SUM" "$URL"
+			KEY=$((SUM != 0))
+			[[ -z "$CATEGORY" || "$CATEGORY" == "$CAT" ]] && printf "%s|%s|%s|%s|%s\n" "$EAN" "$NAME" "$SUM" "$URL" "$KEY"
 		fi
 		
 		EAN=$(echo "$line" | awk -F"$TAB" '{print $1}')
@@ -113,7 +114,7 @@ while ((END == 0)) ; do
 		COUNT=$(echo "$line" | awk '{print $2}')
 		SUM=$((SUM + COUNT))
 	fi
-done | LC_COLLATE=sk_SK.UTF-8 sort -t"|" -k2,2 | while read line ; do
+done | LC_COLLATE=sk_SK.UTF-8 sort -t"|" -k5nr,5 -k2,2 | while read line ; do
 	EAN=$(echo "$line" | awk -F"|" '{print $1}')
 	NAME=$(echo "$line" | awk -F"|" '{print $2}')
 	SUM=$(echo "$line" | awk -F"|" '{print $3}')
