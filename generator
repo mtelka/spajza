@@ -42,10 +42,18 @@ cat <<EOF
 				<th><a href=".">Všetko</a></th>
 EOF
 if [[ -f "$CATFILE" ]] ; then
+	i=1
 	cat "$CATFILE" | while read line ; do
 		ID=$(echo "$line" | awk -F"$TAB" '{print $1}')
 		NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
 		printf "\t\t\t\t<th><a href="%s.html">%s</a></th>\n" "$ID" "$NAME"
+
+		i=$((i + 1))
+
+		if ((i == 5)) ; then
+			printf "\t\t\t</tr>\n\t\t\t</tr>\n"
+			i=0
+		fi
 	done
 fi
 cat <<EOF
