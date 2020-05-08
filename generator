@@ -37,6 +37,7 @@ cat <<EOF
 
 	<body>
 		<h1><b>Špajza ($CATNAME)</b></h1>
+		<hr>
 		<table style="width:100%">
 			<tr>
 				<th><a href=".">Všetko</a></th>
