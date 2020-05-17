@@ -28,7 +28,7 @@ while ((END == 0)) ; do
 				EXP=$(echo "$L" | cut -d "$TAB" -f 2)
 				PRICE=$(echo "$L" | cut -d "$TAB" -f 3)
 				integer STCOUNT=${STOCK[$L]}
-				if [[ "$LASTOUT" == "$TS" ]] ; then
+				if [[ "$LASTOUT" < "$TS" ]] ; then
 					printf "\t%s\t0\tNA\n" "$LASTOUT"
 					LASTOUT=""
 				fi
