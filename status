@@ -28,12 +28,18 @@ while ((END == 0)) ; do
 				EXP=$(echo "$L" | cut -d "$TAB" -f 2)
 				PRICE=$(echo "$L" | cut -d "$TAB" -f 3)
 				integer STCOUNT=${STOCK[$L]}
+				if [[ "$LASTOUT" == "$TS" ]] ; then
+					printf "\t%s\t0\tNA\n" "$LASTOUT"
+					LASTOUT=""
+				fi
 				((STCOUNT == 0)) ||  printf "\t%s\t%s\t%s\t%s\n" "$TS" "$STCOUNT" "$EXP" "$PRICE"
 			done
+			[[ -n "$LASTOUT" ]] && printf "\t%s\t0\tNA\n" "$LASTOUT"
 		fi
 
 		ITEM="$line"
-		LAST=0
+		LAST=""
+		LASTOUT=""
 
 		unset STOCK
 		typeset -A STOCK
@@ -55,6 +61,7 @@ while ((END == 0)) ; do
 			integer STCOUNT=${STOCK[$TS$TAB$EXP$TAB$PRICE]}
 			((STCOUNT == 0)) || printf "Sub-optimal entry: %s\n" "$ORIGLINE" > /dev/stderr
 			STOCK[$TS$TAB$EXP$TAB$PRICE]=$((STCOUNT + COUNT))
+			[[ -z "$LASTOUT" ]] && LASTOUT="$TS"
 		elif ((COUNT < 0)) ; then
 			for L in "${!STOCK[@]}" ; do
 				SEXP=$(echo "$L" | cut -d "$TAB" -f 2)
@@ -68,8 +75,20 @@ while ((END == 0)) ; do
 				fi
 			done
 			((COUNT == 0)) || printf "Unable to pair: %s\n" "$ORIGLINE" > /dev/stderr
+
+			# calculate and set LASTOUT
+			LASTOUT="$TS"
+			integer SUM=0
+			for L in "${!STOCK[@]}" ; do
+				SUM=$((SUM + ${STOCK[$L]}))
+			done
+			((SUM == 0)) && LASTOUT=""
 		else
-			printf "Invalid entry: %s\n" "$ORIGLINE" > /dev/stderr
+			if [[ "$EXP" == "NA" ]] ; then
+				LASTOUT="$TS"
+			else
+				printf "Invalid entry: %s\n" "$ORIGLINE" > /dev/stderr
+			fi
 		fi
 	fi
 done
