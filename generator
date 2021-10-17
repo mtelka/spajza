@@ -149,6 +149,7 @@ done | LC_COLLATE=sk_SK.UTF-8 sort -t"|" -k5nr,5 -k2,2 | while read line ; do
 					$SUM ks
 				</th>
 EOF
+	[[ ! -f "$EAN.png" ]] && echo "WARNING: Missing picture $EAN.png" > /dev/stderr
 	i=$((i + 1))
 done
 
