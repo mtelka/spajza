@@ -32,7 +32,7 @@ while ((END == 0)) ; do
 					printf "\t%s\t0\tNA\n" "$LASTOUT"
 					LASTOUT=""
 				fi
-				((STCOUNT == 0)) ||  printf "\t%s\t%s\t%s\t%s\n" "$TS" "$STCOUNT" "$EXP" "$PRICE"
+				((STCOUNT == 0)) || printf "\t%s\t%s\t%s\t%s\n" "$TS" "$STCOUNT" "$EXP" "$PRICE"
 			done
 			[[ -n "$LASTOUT" ]] && printf "\t%s\t0\tNA\n" "$LASTOUT"
 		fi
@@ -70,6 +70,7 @@ while ((END == 0)) ; do
 					integer DEC=$((-COUNT))
 					((STCOUNT < DEC)) && DEC=$((STCOUNT))
 					STOCK[$L]=$((STCOUNT - DEC))
+					((${STOCK[$L]} == 0)) && unset "STOCK[$L]"
 					COUNT=$((COUNT + DEC))
 					((COUNT == 0)) && break
 				fi
