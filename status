@@ -1,6 +1,9 @@
 #!/bin/ksh93
 
+GNUDATE=/usr/gnu/bin/date
+
 TAB="$(printf '\t')"
+TODAY=$(date +%s)
 
 ITEM=""
 IFS=""
@@ -32,7 +35,12 @@ while ((END == 0)) ; do
 					printf "\t%s\t0\tNA\n" "$LASTOUT"
 					LASTOUT=""
 				fi
-				((STCOUNT == 0)) || printf "\t%s\t%s\t%s\t%s\n" "$TS" "$STCOUNT" "$EXP" "$PRICE"
+				if ((STCOUNT != 0)) ; then
+					printf "\t%s\t%s\t%s\t%s\n" "$TS" "$STCOUNT" "$EXP" "$PRICE"
+					if [[ "$EXP" != "NA" ]] && (($($GNUDATE -d "$EXP" +%s) < TODAY)) ; then
+						printf "Expired: %s\nExpired: %s\t%s\n" "$ITEM" "$EXP" "$STCOUNT" > /dev/stderr
+					fi
+				fi
 			done
 			[[ -n "$LASTOUT" ]] && printf "\t%s\t0\tNA\n" "$LASTOUT"
 		fi
