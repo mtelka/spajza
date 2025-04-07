@@ -64,7 +64,14 @@ while ((END == 0)) ; do
 
 		LAST="$TS"
 
-		if ((COUNT > 0)) ; then
+		if [[ "${COUNT:0:1}" == "@" ]] ; then
+			if ((${COUNT:1} == 0)) ; then
+				printf "Invalid count: %s\n" "$ORIGLINE" > /dev/stderr
+			else
+				LASTOUT=""
+				[[ -n "${!STOCK[@]}" ]] && LASTOUT="$TS"
+			fi
+		elif ((COUNT > 0)) ; then
 			PRICE=$(echo "$line" | cut -d "$TAB" -f 5)
 			integer STCOUNT=${STOCK[$TS$TAB$EXP$TAB$PRICE]}
 			((STCOUNT == 0)) || printf "Sub-optimal entry: %s\n" "$ORIGLINE" > /dev/stderr
