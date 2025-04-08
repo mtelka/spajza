@@ -97,7 +97,7 @@ while ((END == 0)) ; do
 			if [[ -n "$IMGURL" ]] ; then
 				TMPFILE=$(mktemp)
 				curl -s "$IMGURL" --output "$TMPFILE"
-				convert "$TMPFILE" -resize 150x150 "$EAN.png"
+				magick "$TMPFILE" -resize 150x150 "$EAN.png"
 				rm -f "$TMPFILE"
 			fi
 
