@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ksh93
 
 CATFILE=$1
 CATEGORY=$2
@@ -102,13 +102,15 @@ while ((END == 0)) ; do
 			fi
 
 			KEY=$((SUM != 0))
-			[[ -z "$CATEGORY" || "$CATEGORY" == "$CAT" ]] && printf "%s|%s|%s|%s|%s\n" "$EAN" "$NAME" "$SUM" "$URL" "$KEY"
+			if [[ -z "$CATEGORY" ]] || grep -q "^$CATEGORY\$" <<< "$CAT" ; then
+				printf "%s|%s|%s|%s|%s\n" "$EAN" "$NAME" "$SUM" "$URL" "$KEY"
+			fi
 		fi
 		
 		EAN=$(echo "$line" | awk -F"$TAB" '{print $1}')
 		NAME=$(echo "$line" | awk -F"$TAB" '{print $2}')
 		URL=$(echo "$line" | awk -F"$TAB" '{print $3}')
-		CAT=$(echo "$line" | awk -F"$TAB" '{print $4}')
+		CAT=$(echo "$line" | awk -F"$TAB" '{print $4}' | tr ',' '\n')
 
 		SUM=0
 	else
